@@ -66,6 +66,7 @@ function App() {
   const navigate = useNavigate()
   const [currentUser, setCurrentUser] = useState(null)
   const [tradeRecords, setTradeRecords] = useState([])
+  const [saveTradeMessage, setSaveTradeMessage] = useState('')
   const [formData, setFormData] = useState({
     type: 'Forex & Cryptop Trading',
     symbol: '',
@@ -124,16 +125,19 @@ function App() {
 
   const saveTrade = async (event) => {
     event.preventDefault()
+    setSaveTradeMessage('')
     if (
       !formData.symbol.trim() ||
       !formData.side ||
       !formData.tradeDateTime ||
       !parseRiskReward(formData.riskRewardRatio)
     ) {
+      setSaveTradeMessage('Please fill all required fields before saving.')
       return
     }
 
     if (!currentUser) {
+      setSaveTradeMessage('Please log in again to save your trade.')
       navigate('/auth', { replace: true })
       return
     }
@@ -155,6 +159,7 @@ function App() {
       .single()
 
     if (error) {
+      setSaveTradeMessage(error.message || 'Failed to save trade. Please try again.')
       return
     }
 
@@ -162,6 +167,7 @@ function App() {
       { ...tradeToSave, id: data.id, createdAt: data.created_at },
       ...previous,
     ])
+    setSaveTradeMessage('Trade saved successfully.')
     setFormData({
       type: formData.type,
       symbol: '',
@@ -336,6 +342,7 @@ function App() {
                       <TradeEntryPage
                         formData={formData}
                         tradeRecords={tradeRecords}
+                        saveTradeMessage={saveTradeMessage}
                         updateField={updateField}
                         updateExecution={updateExecution}
                         addExecution={addExecution}

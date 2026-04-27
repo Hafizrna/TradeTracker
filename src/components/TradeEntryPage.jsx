@@ -95,6 +95,7 @@ function ExecutionGroup({
 function TradeEntryPage({
   formData,
   tradeRecords,
+  saveTradeMessage,
   updateField,
   updateExecution,
   addExecution,
@@ -235,6 +236,7 @@ function TradeEntryPage({
         <button type="submit" className="save-button">
           Save Trade
         </button>
+        {saveTradeMessage ? <p className="auth-info">{saveTradeMessage}</p> : null}
       </form>
 
       <aside className="history-card">
