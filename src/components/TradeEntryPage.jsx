@@ -111,6 +111,7 @@ function TradeEntryPage({
 }) {
   const [isClearing, setIsClearing] = useState(false)
   const [clearMessage, setClearMessage] = useState('')
+  const isSaveSuccess = saveTradeMessage.toLowerCase().includes('successfully')
 
   const handleClearTrades = async () => {
     const shouldClear = window.confirm(
@@ -253,20 +254,14 @@ function TradeEntryPage({
           />
         ) : null}
 
-        <div className="trade-actions">
-          <button type="submit" className="save-button">
-            Save Trade
-          </button>
-          <button
-            type="button"
-            className="remove-button clear-button"
-            onClick={handleClearTrades}
-            disabled={isClearing || tradeRecords.length === 0}
-          >
-            {isClearing ? 'Clearing...' : 'Clear Recent Trades'}
-          </button>
-        </div>
-        {saveTradeMessage ? <p className="auth-info">{saveTradeMessage}</p> : null}
+        <button type="submit" className="save-button">
+          Save Trade
+        </button>
+        {saveTradeMessage ? (
+          <p className={`save-feedback ${isSaveSuccess ? 'success' : 'error'}`}>
+            {saveTradeMessage}
+          </p>
+        ) : null}
         {clearMessage ? (
           <p className={clearMessage.includes('successfully') ? 'auth-info' : 'auth-error'}>
             {clearMessage}
@@ -275,7 +270,17 @@ function TradeEntryPage({
       </form>
 
       <aside className="history-card">
-        <h2>Recent Trades</h2>
+        <div className="history-head">
+          <h2>Recent Trades</h2>
+          <button
+            type="button"
+            className="remove-button clear-button"
+            onClick={handleClearTrades}
+            disabled={isClearing || tradeRecords.length === 0}
+          >
+            {isClearing ? 'Clearing...' : 'Clear'}
+          </button>
+        </div>
         {tradeRecords.length === 0 ? (
           <p className="empty-state">No trades yet. Save your first trade.</p>
         ) : (
