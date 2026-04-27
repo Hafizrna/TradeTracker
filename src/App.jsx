@@ -1,5 +1,4 @@
 import {
-  Link,
   NavLink,
   Navigate,
   Route,
@@ -135,7 +134,7 @@ function App() {
     }
 
     if (!currentUser) {
-      navigate('/signin', { replace: true })
+      navigate('/auth', { replace: true })
       return
     }
 
@@ -212,48 +211,37 @@ function App() {
     }
   }, [currentUser])
 
-  const handleSignUp = async ({ name, email, password }) => {
+  const handleEmailAuth = async ({ email }) => {
     const normalizedEmail = email.trim().toLowerCase()
-    const { data, error } = await supabase.auth.signUp({
+    const { error } = await supabase.auth.signInWithOtp({
       email: normalizedEmail,
-      password,
       options: {
-        data: { name: name.trim() },
+        shouldCreateUser: true,
+        emailRedirectTo: window.location.origin,
       },
     })
 
     if (error) {
+      if (error.message?.includes('For security purposes')) {
+        return {
+          ok: false,
+          message: 'Please wait 1 minute before requesting another email.',
+        }
+      }
       return { ok: false, message: error.message }
     }
 
-    if (!data.session) {
-      return { ok: true, message: 'Check your email to confirm your account.' }
+    return {
+      ok: true,
+      message: 'Check your email and click the magic link to continue.',
     }
-
-    navigate('/trade-entry', { replace: true })
-    return { ok: true }
-  }
-
-  const handleSignIn = async ({ email, password }) => {
-    const normalizedEmail = email.trim().toLowerCase()
-    const { error } = await supabase.auth.signInWithPassword({
-      email: normalizedEmail,
-      password,
-    })
-
-    if (error) {
-      return { ok: false, message: error.message }
-    }
-
-    navigate('/trade-entry', { replace: true })
-    return { ok: true }
   }
 
   const handleLogout = async () => {
     await supabase.auth.signOut()
     setCurrentUser(null)
     setTradeRecords([])
-    navigate('/signin', { replace: true })
+    navigate('/auth', { replace: true })
   }
 
   useEffect(() => {
@@ -308,22 +296,12 @@ function App() {
       <ScrollToTop />
       <Routes>
         <Route
-          path="/signin"
+          path="/auth"
           element={
             currentUser ? (
               <Navigate to="/" replace />
             ) : (
-              <SignInPage onSignIn={handleSignIn} />
-            )
-          }
-        />
-        <Route
-          path="/signup"
-          element={
-            currentUser ? (
-              <Navigate to="/" replace />
-            ) : (
-              <SignUpPage onSignUp={handleSignUp} />
+              <AuthPage onEmailAuth={handleEmailAuth} />
             )
           }
         />
@@ -395,7 +373,7 @@ function App() {
                 </footer>
               </main>
             ) : (
-              <Navigate to="/signin" replace />
+              <Navigate to="/auth" replace />
             )
           }
         />
@@ -471,98 +449,38 @@ function HomePage() {
   )
 }
 
-function SignInPage({ onSignIn }) {
+function AuthPage({ onEmailAuth }) {
   const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [submitting, setSubmitting] = useState(false)
   const [errorMessage, setErrorMessage] = useState('')
   const [infoMessage, setInfoMessage] = useState('')
 
-  const submitSignIn = async (event) => {
+  const submitAuth = async (event) => {
     event.preventDefault()
+    if (submitting) return
+    setSubmitting(true)
     setErrorMessage('')
     setInfoMessage('')
-    const result = await onSignIn({ email, password })
+    const result = await onEmailAuth({ email })
     if (!result.ok) {
       setErrorMessage(result.message)
-    }
-    if (result.message) {
-      setInfoMessage(result.message)
-    }
-  }
-
-  return (
-    <main className="auth-shell">
-      <form className="auth-card" onSubmit={submitSignIn}>
-        <img src={preloader} alt="App logo" className="auth-logo" />
-        <h2>Sign In</h2>
-        <p className="auth-subtitle">Login to access your trade journal.</p>
-        <label className="field">
-          <span>Email</span>
-          <input
-            type="email"
-            value={email}
-            onChange={(event) => setEmail(event.target.value)}
-            required
-          />
-        </label>
-        <label className="field">
-          <span>Password</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            required
-          />
-        </label>
-        {errorMessage ? <p className="auth-error">{errorMessage}</p> : null}
-        {infoMessage ? <p className="auth-info">{infoMessage}</p> : null}
-        <button type="submit" className="save-button auth-button">
-          Sign In
-        </button>
-        <p className="auth-helper">
-          No account? <Link to="/signup">Sign Up</Link>
-        </p>
-      </form>
-    </main>
-  )
-}
-
-function SignUpPage({ onSignUp }) {
-  const [name, setName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [errorMessage, setErrorMessage] = useState('')
-  const [infoMessage, setInfoMessage] = useState('')
-
-  const submitSignUp = async (event) => {
-    event.preventDefault()
-    setErrorMessage('')
-    setInfoMessage('')
-    const result = await onSignUp({ name, email, password })
-    if (!result.ok) {
-      setErrorMessage(result.message)
+      setSubmitting(false)
       return
     }
-
     if (result.message) {
       setInfoMessage(result.message)
     }
+    setSubmitting(false)
   }
 
   return (
     <main className="auth-shell">
-      <form className="auth-card" onSubmit={submitSignUp}>
+      <form className="auth-card" onSubmit={submitAuth}>
         <img src={preloader} alt="App logo" className="auth-logo" />
-        <h2>Sign Up</h2>
-        <p className="auth-subtitle">Create your account to save trade records.</p>
-        <label className="field">
-          <span>Full Name</span>
-          <input
-            value={name}
-            onChange={(event) => setName(event.target.value)}
-            required
-          />
-        </label>
+        <h2>Continue with Email</h2>
+        <p className="auth-subtitle">
+          Enter your email to receive a secure magic link.
+        </p>
         <label className="field">
           <span>Email</span>
           <input
@@ -572,24 +490,11 @@ function SignUpPage({ onSignUp }) {
             required
           />
         </label>
-        <label className="field">
-          <span>Password</span>
-          <input
-            type="password"
-            value={password}
-            onChange={(event) => setPassword(event.target.value)}
-            minLength={6}
-            required
-          />
-        </label>
         {errorMessage ? <p className="auth-error">{errorMessage}</p> : null}
         {infoMessage ? <p className="auth-info">{infoMessage}</p> : null}
-        <button type="submit" className="save-button auth-button">
-          Sign Up
+        <button type="submit" className="save-button auth-button" disabled={submitting}>
+          {submitting ? 'Sending Link...' : 'Send Magic Link'}
         </button>
-        <p className="auth-helper">
-          Already have an account? <Link to="/signin">Sign In</Link>
-        </p>
       </form>
     </main>
   )
