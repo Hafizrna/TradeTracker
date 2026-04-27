@@ -1,4 +1,5 @@
 import { Link } from 'react-router-dom'
+import { useState } from 'react'
 
 function getTradeNetResult(trade) {
   const executions =
@@ -96,6 +97,7 @@ function TradeEntryPage({
   formData,
   tradeRecords,
   saveTradeMessage,
+  onClearTrades,
   updateField,
   updateExecution,
   addExecution,
@@ -107,6 +109,24 @@ function TradeEntryPage({
   riskRewardOptions,
   tradeStrategies,
 }) {
+  const [isClearing, setIsClearing] = useState(false)
+  const [clearMessage, setClearMessage] = useState('')
+
+  const handleClearTrades = async () => {
+    const shouldClear = window.confirm(
+      'Clear all recent trades? This action cannot be undone.'
+    )
+    if (!shouldClear || isClearing) {
+      return
+    }
+
+    setIsClearing(true)
+    setClearMessage('')
+    const result = await onClearTrades()
+    setClearMessage(result.message || '')
+    setIsClearing(false)
+  }
+
   return (
     <section className="content-grid">
       <Link to="/" className="nav-link back-link">
@@ -233,10 +253,25 @@ function TradeEntryPage({
           />
         ) : null}
 
-        <button type="submit" className="save-button">
-          Save Trade
-        </button>
+        <div className="trade-actions">
+          <button type="submit" className="save-button">
+            Save Trade
+          </button>
+          <button
+            type="button"
+            className="remove-button clear-button"
+            onClick={handleClearTrades}
+            disabled={isClearing || tradeRecords.length === 0}
+          >
+            {isClearing ? 'Clearing...' : 'Clear Recent Trades'}
+          </button>
+        </div>
         {saveTradeMessage ? <p className="auth-info">{saveTradeMessage}</p> : null}
+        {clearMessage ? (
+          <p className={clearMessage.includes('successfully') ? 'auth-info' : 'auth-error'}>
+            {clearMessage}
+          </p>
+        ) : null}
       </form>
 
       <aside className="history-card">

@@ -181,6 +181,25 @@ function App() {
     })
   }
 
+  const clearAllTrades = async () => {
+    if (!currentUser) {
+      return { ok: false, message: 'Please log in again to clear trades.' }
+    }
+
+    const { error } = await supabase
+      .from('trades')
+      .delete()
+      .eq('user_id', currentUser.id)
+
+    if (error) {
+      return { ok: false, message: error.message || 'Failed to clear trades.' }
+    }
+
+    setTradeRecords([])
+    setSaveTradeMessage('')
+    return { ok: true, message: 'All trades cleared successfully.' }
+  }
+
   useEffect(() => {
     if (!currentUser) {
       setTradeRecords([])
@@ -343,6 +362,7 @@ function App() {
                         formData={formData}
                         tradeRecords={tradeRecords}
                         saveTradeMessage={saveTradeMessage}
+                        onClearTrades={clearAllTrades}
                         updateField={updateField}
                         updateExecution={updateExecution}
                         addExecution={addExecution}
@@ -362,6 +382,7 @@ function App() {
                       <DashboardPage
                         tradeRecords={tradeRecords}
                         tradeSymbols={tradeSymbols}
+                        onClearTrades={clearAllTrades}
                       />
                     }
                   />

@@ -1,9 +1,11 @@
 import { useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 
-function DashboardPage({ tradeRecords, tradeSymbols }) {
+function DashboardPage({ tradeRecords, tradeSymbols, onClearTrades }) {
   const [selectedRange, setSelectedRange] = useState('complete')
   const [selectedSymbol, setSelectedSymbol] = useState('all')
+  const [isClearing, setIsClearing] = useState(false)
+  const [clearMessage, setClearMessage] = useState('')
 
   const rangeOptions = [
     { id: 'complete', label: 'Complete' },
@@ -205,6 +207,25 @@ function DashboardPage({ tradeRecords, tradeSymbols }) {
       .sort((a, b) => b.percent - a.percent)
   }, [filteredTrades])
 
+  const handleClearTrades = async () => {
+    const shouldClear = window.confirm(
+      'Clear all trades from dashboard? This action cannot be undone.'
+    )
+    if (!shouldClear || isClearing) {
+      return
+    }
+
+    setIsClearing(true)
+    setClearMessage('')
+    const result = await onClearTrades()
+    if (result.ok) {
+      setSelectedRange('complete')
+      setSelectedSymbol('all')
+    }
+    setClearMessage(result.message || '')
+    setIsClearing(false)
+  }
+
   return (
     <section className="dashboard-page">
       <Link to="/" className="nav-link back-link">
@@ -242,6 +263,19 @@ function DashboardPage({ tradeRecords, tradeSymbols }) {
         <p className="filter-note">
           Dashboard stats are calculated from the selected period.
         </p>
+        <button
+          type="button"
+          className="remove-button clear-button"
+          onClick={handleClearTrades}
+          disabled={isClearing || tradeRecords.length === 0}
+        >
+          {isClearing ? 'Clearing...' : 'Clear All Trades'}
+        </button>
+        {clearMessage ? (
+          <p className={clearMessage.includes('successfully') ? 'auth-info' : 'auth-error'}>
+            {clearMessage}
+          </p>
+        ) : null}
       </section>
 
       <section className="dashboard-grid">
