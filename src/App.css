@@ -1039,3 +1039,44 @@ h3 {
     text-align: center;
   }
 }
+
+@media (max-width: 360px) {
+  .app-shell {
+    padding: 10px;
+    gap: 14px;
+  }
+
+  .summary-card,
+  .trade-form,
+  .history-card {
+    padding: 14px;
+    border-radius: 12px;
+  }
+
+  .intro-image {
+    width: min(180px, 66vw);
+    margin: 0 auto 10px;
+  }
+
+  .intro-copy h2 {
+    font-size: 1.7rem;
+    line-height: 1.12;
+    margin-bottom: 6px;
+  }
+
+  .intro-card p,
+  .intro-list {
+    font-size: 0.77rem;
+    line-height: 1.38;
+  }
+
+  .page-nav {
+    gap: 8px;
+  }
+
+  .page-nav .nav-link {
+    width: 100%;
+    padding: 9px 10px;
+    font-size: 0.88rem;
+  }
+}
