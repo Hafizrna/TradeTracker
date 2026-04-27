@@ -1004,4 +1004,38 @@ h3 {
     font-size: 0.72rem;
     line-height: 1.35;
   }
+
+  .intro-image {
+    float: none;
+    display: block;
+    width: min(220px, 62vw);
+    max-height: none;
+    margin: 2px auto 12px;
+  }
+
+  .intro-copy h2 {
+    text-align: left;
+    font-size: 1.95rem;
+    line-height: 1.1;
+    margin-bottom: 8px;
+  }
+
+  .intro-card p {
+    font-size: 0.8rem;
+    line-height: 1.45;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+
+  .intro-list {
+    font-size: 0.8rem;
+    line-height: 1.4;
+    text-align: left;
+    gap: 4px;
+  }
+
+  .page-nav .nav-link {
+    flex: 1 1 0;
+    text-align: center;
+  }
 }
