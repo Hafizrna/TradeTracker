@@ -1031,16 +1031,17 @@ h3 {
   .intro-image {
     float: right;
     display: block;
-    width: min(170px, 42vw);
-    max-height: 220px;
-    margin: 4px 0 8px 10px;
+    width: min(200px, 46vw);
+    max-height: 260px;
+    margin: 14px 0 10px 12px;
   }
 
   .intro-copy h2 {
     text-align: left;
-    font-size: 1.95rem;
-    line-height: 1.1;
+    font-size: clamp(1.55rem, 7vw, 2rem);
+    line-height: 1.05;
     margin-bottom: 8px;
+    white-space: nowrap;
   }
 
   .intro-card p {
@@ -1078,15 +1079,16 @@ h3 {
 
   .intro-image {
     float: right;
-    width: min(130px, 40vw);
-    max-height: 160px;
-    margin: 2px 0 6px 8px;
+    width: min(150px, 44vw);
+    max-height: 190px;
+    margin: 10px 0 8px 8px;
   }
 
   .intro-copy h2 {
-    font-size: 1.7rem;
+    font-size: 1.45rem;
     line-height: 1.12;
     margin-bottom: 6px;
+    white-space: nowrap;
   }
 
   .intro-card p,
