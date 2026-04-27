@@ -1024,6 +1024,10 @@ h3 {
   }
 
   .app-footer {
+    width: min(100%, 340px);
+    margin: 2px auto 0;
+    padding-left: 8px;
+    padding-right: 8px;
     font-size: 0.72rem;
     line-height: 1.35;
   }
@@ -1105,5 +1109,10 @@ h3 {
     width: 100%;
     padding: 9px 10px;
     font-size: 0.88rem;
+  }
+
+  .app-footer {
+    width: min(100%, 300px);
+    font-size: 0.69rem;
   }
 }
