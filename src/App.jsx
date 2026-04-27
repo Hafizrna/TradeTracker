@@ -25,7 +25,7 @@ const tradeStrategies = [
   'Breakout Trading',
   'Support & Resistance',
   'Supply and Demand',
-  'Smart Money Concepts (SMC / ICT)',
+  'Smart Money Concept',
   'Scalping',
   'Swing Trading',
   'Range analysis',
