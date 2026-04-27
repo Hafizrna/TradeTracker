@@ -1006,11 +1006,11 @@ h3 {
   }
 
   .intro-image {
-    float: none;
+    float: right;
     display: block;
-    width: min(220px, 62vw);
-    max-height: none;
-    margin: 2px auto 12px;
+    width: min(170px, 42vw);
+    max-height: 220px;
+    margin: 4px 0 8px 10px;
   }
 
   .intro-copy h2 {
@@ -1054,8 +1054,10 @@ h3 {
   }
 
   .intro-image {
-    width: min(180px, 66vw);
-    margin: 0 auto 10px;
+    float: right;
+    width: min(130px, 40vw);
+    max-height: 160px;
+    margin: 2px 0 6px 8px;
   }
 
   .intro-copy h2 {
