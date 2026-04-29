@@ -38,6 +38,7 @@ const tradeStrategies = [
   'Mean Reversion',
   'Momentum Trading',
   'Order Block Trading',
+  'PagalPan',
 ]
 
 const createExecution = () => ({
